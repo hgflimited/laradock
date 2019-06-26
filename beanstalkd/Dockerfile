@@ -1,7 +1,16 @@
-FROM alpine
+FROM phusion/baseimage:latest
+
 LABEL maintainer="Mahmoud Zalt <mahmoud@zalt.me>"
 
-RUN apk add --no-cache beanstalkd
+ENV DEBIAN_FRONTEND noninteractive
+ENV PATH /usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+RUN apt-get update
+RUN apt-get install -y beanstalkd
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+VOLUME /var/lib/beanstalkd/data
 
 EXPOSE 11300
-ENTRYPOINT ["/usr/bin/beanstalkd"]
+
+CMD ["/usr/bin/beanstalkd"]
