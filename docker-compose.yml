@@ -116,6 +116,9 @@ services:
         - "dockerhost:${DOCKER_HOST_IP}"
       ports:
         - "${WORKSPACE_SSH_PORT}:22"
+        - "6001:6001"
+      expose:
+        - 6001
       tty: true
       environment:
         - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
@@ -985,3 +988,15 @@ services:
         - frontend
         - backend
       command: "tail -f /dev/null"
+
+    haskell:
+      build: ./haskell
+      expose:
+        - 8080
+      ports:
+        - 8080:8080
+      command: "stack exec pandocAPI-exe"
+      networks:
+        - backend
+      volumes:
+        - ./haskell/src:/app
