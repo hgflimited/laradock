@@ -9,6 +9,6 @@ RUN apt-get update -q && apt-get install -qy \
 
 COPY ./src /app
 WORKDIR /app/pandocAPI
-RUN stack build
+RUN stack build --install-ghc
 
 CMD ["stack exec pandocAPI-exe"]
