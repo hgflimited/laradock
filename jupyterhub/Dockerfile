@@ -15,7 +15,7 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 
 RUN apt update -yqq && \
     apt-get install -y nodejs
-    
+   
 RUN npm install -g configurable-http-proxy
 
 RUN pip install jupyterhub
