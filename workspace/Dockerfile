@@ -154,27 +154,6 @@ COPY ./crontab /etc/cron.d
 RUN chmod -R 644 /etc/cron.d
 
 ###########################################################################
-# Drush:
-###########################################################################
-
-# Deprecated install of Drush 8 and earlier versions.
-# Drush 9 and up require Drush to be listed as a composer dependency of your site.
-
-USER root
-
-ARG INSTALL_DRUSH=false
-ARG DRUSH_VERSION
-ENV DRUSH_VERSION ${DRUSH_VERSION}
-
-RUN if [ ${INSTALL_DRUSH} = true ]; then \
-    apt-get -y install mysql-client && \
-    # Install Drush with the phar file.
-    curl -fsSL -o /usr/local/bin/drush https://github.com/drush-ops/drush/releases/download/${DRUSH_VERSION}/drush.phar | bash && \
-    chmod +x /usr/local/bin/drush && \
-    drush core-status \
-;fi
-
-###########################################################################
 # SSH2:
 ###########################################################################
 
@@ -188,7 +167,7 @@ RUN if [ ${INSTALL_SSH2} = true ]; then \
 ;fi
 
 ###########################################################################
-# SOAP:
+# GMP:
 ###########################################################################
 
 USER root
@@ -197,7 +176,7 @@ ARG INSTALL_GMP=false
 ARG PHP_VERSION=${PHP_VERSION}
 
 RUN if [ ${INSTALL_GMP} = true ]; then \
-  # Install the PHP SOAP extension
+  # Install the PHP GMP extension
   apt-get -y install php${PHP_VERSION}-gmp \
 ;fi
 
@@ -236,19 +215,6 @@ RUN if [ ${INSTALL_IMAP} = true ]; then \
 ;fi
 
 ###########################################################################
-# Subversion:
-###########################################################################
-
-USER root
-
-ARG INSTALL_SUBVERSION=false
-
-RUN if [ ${INSTALL_SUBVERSION} = true ]; then \
-    apt-get install -y subversion \
-;fi
-
-
-###########################################################################
 # xDebug:
 ###########################################################################
 
@@ -264,10 +230,6 @@ RUN if [ ${INSTALL_XDEBUG} = true ]; then \
 
 # ADD for REMOTE debugging
 COPY ./xdebug.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/xdebug.ini
-
-RUN sed -i "s/xdebug.remote_autostart=0/xdebug.remote_autostart=1/" /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/xdebug.ini && \
-    sed -i "s/xdebug.remote_enable=0/xdebug.remote_enable=1/" /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/xdebug.ini && \
-    sed -i "s/xdebug.cli_color=0/xdebug.cli_color=1/" /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/xdebug.ini
 
 ###########################################################################
 # Phpdbg:
@@ -395,23 +357,6 @@ RUN if [ ${INSTALL_LIBPNG} = true ]; then \
     apt update && \
     apt install libpng16-16 \
 ;fi
-
-###########################################################################
-# Drupal Console:
-###########################################################################
-
-USER root
-
-ARG INSTALL_DRUPAL_CONSOLE=false
-
-RUN if [ ${INSTALL_DRUPAL_CONSOLE} = true ]; then \
-    apt-get -y install mysql-client && \
-    curl https://drupalconsole.com/installer -L -o drupal.phar && \
-    mv drupal.phar /usr/local/bin/drupal && \
-    chmod +x /usr/local/bin/drupal \
-;fi
-
-USER laradock
 
 ###########################################################################
 # Node / NVM:
@@ -542,36 +487,6 @@ RUN if [ ${INSTALL_AEROSPIKE} = true ]; then \
 ;fi
 
 ###########################################################################
-# PHP V8JS:
-###########################################################################
-
-USER root
-
-ARG INSTALL_V8JS=false
-
-RUN if [ ${INSTALL_V8JS} = true ]; then \
-    # Install the php V8JS extension
-    add-apt-repository -y ppa:pinepain/libv8-archived \
-    && apt-get update -yqq \
-    && apt-get install -y php${LARADOCK_PHP_VERSION}-xml php${LARADOCK_PHP_VERSION}-dev php-pear libv8-5.4 \
-    && pecl install v8js \
-    && echo "extension=v8js.so" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini \
-;fi
-
-###########################################################################
-# Laravel Envoy:
-###########################################################################
-
-USER laradock
-
-ARG INSTALL_LARAVEL_ENVOY=false
-
-RUN if [ ${INSTALL_LARAVEL_ENVOY} = true ]; then \
-    # Install the Laravel Envoy
-    composer global require "laravel/envoy=~1.0" \
-;fi
-
-###########################################################################
 # Laravel Installer:
 ###########################################################################
 
@@ -591,34 +506,6 @@ RUN if [ ${INSTALL_LARAVEL_INSTALLER} = true ]; then \
 	composer global require "laravel/installer" \
 ;fi
 
-###########################################################################
-# Deployer:
-###########################################################################
-
-USER root
-
-ARG INSTALL_DEPLOYER=false
-
-RUN if [ ${INSTALL_DEPLOYER} = true ]; then \
-    # Install the Deployer
-    # Using Phar as currently there is no support for laravel 4 from composer version
-    # Waiting to be resolved on https://github.com/deployphp/deployer/issues/1552
-    curl -LO https://deployer.org/deployer.phar && \
-    mv deployer.phar /usr/local/bin/dep && \
-    chmod +x /usr/local/bin/dep \
-;fi
-
-###########################################################################
-# Prestissimo:
-###########################################################################
-USER laradock
-
-ARG INSTALL_PRESTISSIMO=false
-
-RUN if [ ${INSTALL_PRESTISSIMO} = true ]; then \
-    # Install Prestissimo
-    composer global require "hirak/prestissimo" \
-;fi
 
 ###########################################################################
 # Linuxbrew:
@@ -829,7 +716,6 @@ RUN if [ ${INSTALL_DUSK_DEPS} = true ]; then \
 
 RUN php -v | head -n 1 | grep -q "PHP ${LARADOCK_PHP_VERSION}."
 
-#
 #--------------------------------------------------------------------------
 # Final Touch
 #--------------------------------------------------------------------------
@@ -837,10 +723,12 @@ RUN php -v | head -n 1 | grep -q "PHP ${LARADOCK_PHP_VERSION}."
 
 USER root
 
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+
 # Clean up
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     rm /var/log/lastlog /var/log/faillog
 
 # Set default work directory
-WORKDIR /var/www
+WORKDIR /var/www/StormIP
