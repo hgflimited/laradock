@@ -362,6 +362,8 @@ RUN if [ ${INSTALL_LIBPNG} = true ]; then \
 # Node / NVM:
 ###########################################################################
 
+USER laradock
+
 # Check if NVM needs to be installed
 ARG NODE_VERSION=node
 ENV NODE_VERSION ${NODE_VERSION}
