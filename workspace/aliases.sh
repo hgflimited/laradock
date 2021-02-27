@@ -102,11 +102,8 @@ alias pv="package-version"
 alias lv="latest-version"
 
 # git aliases
-alias gaa="git add ."
-alias gd="git --no-pager diff"
-alias git-revert="git reset --hard && git clean -df"
-alias gs="git status"
-alias whoops="git reset --hard && git clean -df"
+alias git="echo -e \"${RED}git commands are not available inside this workspace.${NC}\"" 
+
 
 # Create a new directory and enter it
 function mkd() {
