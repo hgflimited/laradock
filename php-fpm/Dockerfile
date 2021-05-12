@@ -984,8 +984,6 @@ RUN set -xe; php -v | head -n 1 | grep -q "PHP ${LARADOCK_PHP_VERSION}."
 COPY ./laravel.ini /usr/local/etc/php/conf.d
 COPY ./xlaravel.pool.conf /usr/local/etc/php-fpm.d/
 
-COPY ./ldap/ldap.conf /etc/ldap/ldap.conf
-
 USER root
 
 # Clean up
