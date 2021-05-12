@@ -141,7 +141,7 @@ RUN echo "" >> ~/.bashrc && \
 USER laradock
 
 RUN echo "" >> ~/.bashrc && \
-    echo 'export PATH="/var/www/StormIP/vendor/bin:$PATH"' >> ~/.bashrc
+    echo 'export PATH="/var/www/ocis/vendor/bin:$PATH"' >> ~/.bashrc
 
 ###########################################################################
 # Crontab
@@ -733,4 +733,4 @@ RUN apt-get clean && \
     rm /var/log/lastlog /var/log/faillog
 
 # Set default work directory
-WORKDIR /var/www/StormIP
+WORKDIR /var/www/ocis
