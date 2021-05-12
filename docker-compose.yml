@@ -123,9 +123,6 @@ services:
         - MSSQL_DATABASE=${MSSQL_DATABASE}
         - MSSQL_PORT=${MSSQL_PORT}
         - MSSQL_BACKUP_SERVER=${MSSQL_BACKUP_SERVER}
-        - XDEBUG_REMOTE_HOST=${XDEBUG_REMOTE_HOST}
-        - XDEBUG_REMOTE_CONNECT_BACK=${XDEBUG_REMOTE_CONNECT_BACK}
-        - XDEBUG_REMOTE_PORT=${XDEBUG_REMOTE_PORT}
         - XDEBUG_IDEKEY=${XDEBUG_IDEKEY}
       networks:
         - frontend
@@ -181,10 +178,8 @@ services:
         - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
         - DOCKER_HOST=tcp://docker-in-docker:2375
         - FAKETIME=${PHP_FPM_FAKETIME}
-        - XDEBUG_REMOTE_HOST=${XDEBUG_REMOTE_HOST}
-        - XDEBUG_REMOTE_CONNECT_BACK=${XDEBUG_REMOTE_CONNECT_BACK}
-        - XDEBUG_REMOTE_PORT=${XDEBUG_REMOTE_PORT}
         - XDEBUG_IDEKEY=${XDEBUG_IDEKEY}
+        - XDEBUG_CONFIG=${XDEBUG_CONFIG}
       depends_on:
         - workspace
       networks:
